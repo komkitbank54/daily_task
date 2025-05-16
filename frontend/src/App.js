@@ -1,7 +1,11 @@
+import { useState } from 'react';
+
 import './css/main.css';
 import './css/button.css'
 
 function App() {
+  const [active, setActive] = useState(null);
+
   return (
     <div className="main">
         Halo
