@@ -28,17 +28,21 @@ router.post('/tasks', async (req, res) => {
     }
 });
 
-// PUT task by id
+// EDIT a task by id
 router.put('/tasks/edit=:id', async (req, res) => {
-  const { id } = req.params;
-  const { isCompleted } = req.body;
-  try {
-    const updatedTask = await Task.findByIdAndUpdate(id, { isCompleted }, { new: true });
-    res.json(updatedTask);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
+    try {
+        const task = await Task.findById(req.params.id);
+        if (!task) return res.status(404).json({ message: 'Task not found' });
+        task.title = req.body.title || task.title;
+        task.description = req.body.description || task.description;
+        task.completed = req.body.completed !== undefined ? req.body.completed : task.completed;
+        const updatedTask = await task.save();
+        res.json(updatedTask);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
 });
+
 
 
 // DELETE a task by id
@@ -46,8 +50,8 @@ router.delete('/tasks/delete=:id', async (req, res) => {
     try {
         const task = await Task.findById(req.params.id);
         if (!task) return res.status(404).json({ message: 'Task not found' });
-        await task.remove();
-        res.json({ message: 'Task deleted' });
+        await task.deleteOne();
+        res.json({ message: 'Task deleted successfully' });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
