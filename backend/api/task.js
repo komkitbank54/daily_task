@@ -1,30 +1,44 @@
 const express = require('express');
 const router = express.Router();
-const Task = require('./task');
-
-// GET all tasks from date
-router.get('/tasks', async (req, res) => {
-    try {
-        const tasks = await Task.find().sort({ createdAt: -1 });
-        res.json(tasks);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
+const Task = require('../models/taskSchema');
 
 // CREATE a new task
 router.post('/tasks', async (req, res) => {
     const task = new Task({
+        user: req.body.user,
         title: req.body.title,
         description: req.body.description,
-        completed: req.body.completed
+        todayCompleted: req.body.completed
     });
 
+    if (!task.user || !task.title || !task.description) {
+        return res.status(400).json({ message: 'User, title, and description are required' });
+    }
+    const existingUser = await Task.findOne({ user: task.user });
+    if (!existingUser) {
+        return res.status(400).json({ message: 'User does not exist' });
+    }
+
     try {
+        
         const newTask = await task.save();
         res.status(201).json(newTask);
     } catch (err) {
         res.status(400).json({ message: err.message });
+    }
+});
+
+// GET all tasks or tasks by user
+router.get('/tasks', async (req, res) => {
+    try {
+        let query = {};
+        if (req.query.user) {
+            query.user = req.query.user;
+        }
+        const tasks = await Task.find(query).sort({ createdAt: -1 });
+        res.json(tasks);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 });
 
