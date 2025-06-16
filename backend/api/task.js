@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Task = require('../models/taskSchema');
+const User = require('../models/userSchema');
 
 // CREATE a new task
 router.post('/tasks', async (req, res) => {
@@ -11,10 +12,12 @@ router.post('/tasks', async (req, res) => {
         todayCompleted: req.body.completed
     });
 
+    // Check for required fields
     if (!task.user || !task.title || !task.description) {
         return res.status(400).json({ message: 'User, title, and description are required' });
     }
-    const existingUser = await Task.findOne({ user: task.user });
+
+    const existingUser = await User.findOne({ username: task.user })
     if (!existingUser) {
         return res.status(400).json({ message: 'User does not exist' });
     }
