@@ -20,7 +20,6 @@ router.post('/tasks', async (req, res) => {
     }
 
     try {
-        
         const newTask = await task.save();
         res.status(201).json(newTask);
     } catch (err) {
@@ -60,11 +59,11 @@ router.put('/tasks/edit=:id', async (req, res) => {
 
 
 // DELETE a task by id
-router.delete('/tasks/delete=:id', async (req, res) => {
+router.delete('/tasks/delete', async (req, res) => {
     try {
         const task = await Task.findById(req.params.id);
         if (!task) return res.status(404).json({ message: 'Task not found' });
-        await task.deleteOne();
+        await task.
         res.json({ message: 'Task deleted successfully' });
     } catch (err) {
         res.status(500).json({ message: err.message });
