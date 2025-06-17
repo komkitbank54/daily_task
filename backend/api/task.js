@@ -5,11 +5,21 @@ const User = require('../models/userSchema');
 
 // CREATE a new task
 router.post('/tasks', async (req, res) => {
+    // Find the highest current priority for this user
+    let nextPriority = 0;
+    if (req.body.user) {
+        const lastTask = await Task.findOne({ user: req.body.user }).sort({ priority: -1 });
+        if (lastTask && typeof lastTask.priority === 'number') {
+            nextPriority = lastTask.priority + 1;
+        }
+    }
+
     const task = new Task({
         user: req.body.user,
         title: req.body.title,
         description: req.body.description,
-        todayCompleted: req.body.completed
+        todayCompleted: req.body.completed,
+        priority: nextPriority
     });
 
     // Check for required fields
@@ -17,7 +27,7 @@ router.post('/tasks', async (req, res) => {
         return res.status(400).json({ message: 'User, title, and description are required' });
     }
 
-    const existingUser = await User.findOne({ username: task.user })
+    const existingUser = await User.findOne({ username: task.user });
     if (!existingUser) {
         return res.status(400).json({ message: 'User does not exist' });
     }
@@ -45,9 +55,10 @@ router.get('/tasks', async (req, res) => {
 });
 
 // EDIT a task by id
-router.put('/tasks/edit=:id', async (req, res) => {
+router.put('/tasks/edit', async (req, res) => {
     try {
-        const task = await Task.findById(req.params.id);
+        const taskId = req.query.id;
+        const task = await Task.findById(taskId);
         if (!task) return res.status(404).json({ message: 'Task not found' });
         task.title = req.body.title || task.title;
         task.description = req.body.description || task.description;
@@ -61,13 +72,18 @@ router.put('/tasks/edit=:id', async (req, res) => {
 
 
 
-// DELETE a task by id
+// DELETE a task by id or all tasks if no id is provided
 router.delete('/tasks/delete', async (req, res) => {
     try {
-        const task = await Task.findById(req.params.id);
-        if (!task) return res.status(404).json({ message: 'Task not found' });
-        await task.
-        res.json({ message: 'Task deleted successfully' });
+        if (req.query.id) {
+            const task = await Task.findById(req.query.id);
+            if (!task) return res.status(404).json({ message: 'Task not found' });
+            await task.deleteOne();
+            res.json({ message: 'Task deleted successfully' });
+        } else {
+            await Task.deleteMany({});
+            res.json({ message: 'All tasks deleted successfully' });
+        }
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

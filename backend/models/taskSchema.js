@@ -6,6 +6,7 @@ const taskSchema = new mongoose.Schema({
     user: { type: String, required: true }, // changed from user (ObjectId) to username (String)
     title: { type: String, required: true },
     description: { type: String, required: true },
+    priority: { type: Number, default: 0 },
     todayCompleted: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now }
 });
