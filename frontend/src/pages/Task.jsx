@@ -1,20 +1,29 @@
 import { AnimatePresence } from "framer-motion";
 import { useTasks } from "../hooks/useTasks";
+import { useAppContext } from "../context/AppContext";
+
+import TaskSettingsButton from "../components/TaskSettingsButton";
 import TaskItem from "../components/TaskItem";
 
 import "../css/Task.css";
-import settingsIcon from "../css/icons/settings.png";
 
 export default function Task() {
-    const { tasks, toggleTaskCompletion } = useTasks();
+    const {
+        tasks,
+        toggleTaskCompletion,
+        deleteTask,
+        moveTaskUp,
+        moveTaskDown,
+    } = useTasks();
+    const { editMode, toggleEditMode } = useAppContext();
 
     return (
         <>
-            <h1 className="font-bold text-[2rem] text-center border-test">Daily Tasks</h1>
+            <h1 className="font-bold text-[2rem] text-center border-test">
+                Daily Tasks
+            </h1>
             <div className="tag-grid">
-                <button className="tag-settings" onClick={() => alert("Settings clicked!")}>
-                    <img src={settingsIcon} alt="Settings" />
-                </button>
+                <TaskSettingsButton onClick={toggleEditMode} />
                 <AnimatePresence>
                     {tasks.map((task, index) => (
                         <TaskItem
@@ -22,6 +31,10 @@ export default function Task() {
                             task={task}
                             index={index}
                             onToggle={toggleTaskCompletion}
+                            isSettings={editMode}
+                            onDelete={deleteTask}
+                            onMoveUp={moveTaskUp}
+                            onMoveDown={moveTaskDown}
                         />
                     ))}
                 </AnimatePresence>

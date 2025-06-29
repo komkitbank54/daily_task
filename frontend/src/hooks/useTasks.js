@@ -24,7 +24,7 @@ export function useTasks() {
             if (a.todayCompleted !== b.todayCompleted) {
                 return a.todayCompleted ? 1 : -1;
             }
-            return b.priority - a.priority;                           
+            return b.priority - a.priority;
         });
     };
 
@@ -47,5 +47,37 @@ export function useTasks() {
         }
     };
 
-    return { tasks, toggleTaskCompletion };
+    const deleteTask = (index) => {
+        const newTasks = [...tasks];
+        newTasks.splice(index, 1);
+        setTasks(newTasks);
+    };
+
+    const moveTaskUp = (index) => {
+        if (index <= 0) return;
+        const newTasks = [...tasks];
+        [newTasks[index - 1], newTasks[index]] = [
+            newTasks[index],
+            newTasks[index - 1],
+        ];
+        setTasks(newTasks);
+    };
+
+    const moveTaskDown = (index) => {
+        if (index >= tasks.length - 1) return;
+        const newTasks = [...tasks];
+        [newTasks[index], newTasks[index + 1]] = [
+            newTasks[index + 1],
+            newTasks[index],
+        ];
+        setTasks(newTasks);
+    };
+
+    return {
+        tasks,
+        toggleTaskCompletion,
+        deleteTask,
+        moveTaskUp,
+        moveTaskDown,
+    };
 }
