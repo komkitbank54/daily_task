@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export function useTasks() {
+export function useTasks(editMode = false) {
     const [tasks, setTasks] = useState([]);
 
     useEffect(() => {
@@ -21,14 +21,16 @@ export function useTasks() {
 
     const sortTasks = (taskList) => {
         return [...taskList].sort((a, b) => {
+            console.log(`Sorting tasks: ${a.priority} vs ${b.priority}`);
             if (a.todayCompleted !== b.todayCompleted) {
                 return a.todayCompleted ? 1 : -1;
             }
-            return b.priority - a.priority;
+            return a.priority - b.priority;
         });
     };
 
     const toggleTaskCompletion = async (index) => {
+        console.log("tasks", tasks);
         const updatedTasks = [...tasks];
         const task = updatedTasks[index];
         const newValue = !task.todayCompleted;
@@ -73,11 +75,30 @@ export function useTasks() {
         setTasks(newTasks);
     };
 
+    // Save all tasks to API by updating priority with current index
+    const saveAllTasks = async () => {
+        try {
+            const updatePromises = tasks.map((task, index) =>
+                fetch(`http://localhost:5000/api/tasks/${task._id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ priority: tasks.length - index }),
+                })
+            );
+            await Promise.all(updatePromises);
+            // Optionally, refetch tasks to ensure state is up to date
+            fetchTasks();
+        } catch (err) {
+            console.error("Failed to save all tasks:", err);
+        }
+    };
+
     return {
         tasks,
         toggleTaskCompletion,
         deleteTask,
         moveTaskUp,
         moveTaskDown,
+        saveAllTasks,
     };
 }

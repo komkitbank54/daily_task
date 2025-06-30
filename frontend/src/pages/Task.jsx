@@ -4,22 +4,24 @@ import { useAppContext } from "../context/AppContext";
 
 import TaskSettingsButton from "../components/TaskSettingsButton";
 import TaskItem from "../components/TaskItem";
+import SaveButton from "../components/SaveButton";
 
 import "../css/Task.css";
 
 export default function Task() {
+    const { editMode, toggleEditMode } = useAppContext();
     const {
         tasks,
         toggleTaskCompletion,
         deleteTask,
         moveTaskUp,
         moveTaskDown,
-    } = useTasks();
-    const { editMode, toggleEditMode } = useAppContext();
+        saveAllTasks,
+    } = useTasks(editMode);
 
     return (
         <>
-            <h1 className="font-bold text-[2rem] text-center border-test">
+            <h1 className="font-bold text-[2rem] text-center">
                 Daily Tasks
             </h1>
             <div className="tag-grid">
@@ -38,6 +40,11 @@ export default function Task() {
                         />
                     ))}
                 </AnimatePresence>
+                {editMode && (
+                    <SaveButton
+                        onClick={saveAllTasks}
+                    />
+                )}
             </div>
         </>
     );

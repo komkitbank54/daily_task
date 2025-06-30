@@ -63,6 +63,7 @@ router.put('/tasks/:id', async (req, res) => {
     // แก้เฉพาะ field ที่ส่งมา
     if (req.body.title !== undefined) task.title = req.body.title;
     if (req.body.description !== undefined) task.description = req.body.description;
+    if (req.body.priority !== undefined) task.priority = req.body.priority;
     if (req.body.completed !== undefined) task.completed = req.body.completed;
     if (req.body.todayCompleted !== undefined) task.todayCompleted = req.body.todayCompleted;
 
