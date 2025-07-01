@@ -3,6 +3,8 @@ import { useState, useRef } from "react";
 import DragHandle from "./DragHandle";
 import "../css/Task.css";
 
+import { useEffect } from "react";
+
 export default function TaskItem({ 
     task, 
     index, 
@@ -17,57 +19,61 @@ export default function TaskItem({
     const dragElementRef = useRef(null);
     const isChecked = isSettings ? false : task.todayCompleted;
 
-    const handleDragStart = (e) => {
-        if (!isSettings) return;
-        setIsDragging(true);
-        e.dataTransfer.setData("text/plain", index.toString());
-        e.dataTransfer.effectAllowed = "move";
+    useEffect(() => {
+    if (!isSettings || !dragElementRef.current) return;
+
+    const el = dragElementRef.current;
+
+    const handleTouchMove = (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+
+        const touch = e.touches[0];
+        const elements = document.elementsFromPoint(touch.clientX, touch.clientY);
+        const taskElement = elements.find(el => el.classList.contains('tag-banner'));
+
+        if (taskElement && taskElement !== el) {
+            const allTasks = document.querySelectorAll('.tag-banner');
+            const hoveredIndex = Array.from(allTasks).indexOf(taskElement);
+            if (hoveredIndex !== -1) {
+                setDragOverIndex(hoveredIndex);
+            }
+        }
     };
 
-    const handleDragEnd = () => {
-        setIsDragging(false);
-        setDragOverIndex(null);
+    el.addEventListener("touchmove", handleTouchMove, { passive: false });
+
+    return () => {
+        el.removeEventListener("touchmove", handleTouchMove);
     };
+}, [isSettings, isDragging]);
 
     const handleDragOver = (e) => {
         if (!isSettings) return;
         e.preventDefault();
-        e.dataTransfer.dropEffect = "move";
         setDragOverIndex(index);
     };
 
     const handleDrop = (e) => {
         if (!isSettings) return;
         e.preventDefault();
-        
         const draggedIndex = parseInt(e.dataTransfer.getData("text/plain"));
         if (draggedIndex !== index) {
             onReorder(draggedIndex, index);
         }
-        
         setDragOverIndex(null);
         setIsDragging(false);
-    };
-
-    // Mobile touch handlers
-    const handleTouchStart = (e) => {
-        if (!isSettings) return;
-        
-        const touch = e.touches[0];
-        const rect = e.currentTarget.getBoundingClientRect();
-        setTouchOffset(touch.clientY - rect.top);
-        setIsDragging(true);
     };
 
     const handleTouchMove = (e) => {
         if (!isSettings || !isDragging) return;
         e.preventDefault();
-        
+
         const touch = e.touches[0];
         const elements = document.elementsFromPoint(touch.clientX, touch.clientY);
         const taskElement = elements.find(el => el.classList.contains('tag-banner'));
-        
-        if (taskElement && taskElement !== e.currentTarget) {
+
+        if (taskElement && taskElement !== dragElementRef.current) {
             const allTasks = document.querySelectorAll('.tag-banner');
             const hoveredIndex = Array.from(allTasks).indexOf(taskElement);
             if (hoveredIndex !== -1) {
@@ -79,22 +85,22 @@ export default function TaskItem({
     const handleTouchEnd = (e) => {
         if (!isSettings || !isDragging) return;
         e.preventDefault();
-        
+
         const touch = e.changedTouches[0];
         const elements = document.elementsFromPoint(touch.clientX, touch.clientY);
-        const taskElement = elements.find(el => 
-            el.classList.contains('tag-banner') && el !== e.currentTarget
+        const taskElement = elements.find(el =>
+            el.classList.contains('tag-banner') && el !== dragElementRef.current
         );
-        
+
         if (taskElement) {
             const allTasks = document.querySelectorAll('.tag-banner');
             const droppedIndex = Array.from(allTasks).indexOf(taskElement);
-            
+
             if (droppedIndex !== -1) {
                 onReorder(index, droppedIndex);
             }
         }
-        
+
         setIsDragging(false);
         setDragOverIndex(null);
         setTouchOffset(0);
@@ -129,51 +135,60 @@ export default function TaskItem({
             className={`tag-banner${isChecked ? " tag-banner-active" : ""}${
                 dragOverIndex === index ? " drag-over" : ""
             }${isDragging ? " dragging" : ""}`}
-            draggable={isSettings}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
             onDragOver={handleDragOver}
             onDragLeave={() => setDragOverIndex(null)}
             onDrop={handleDrop}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
             onClick={handleTaskClick}
             style={{
-                cursor: isSettings ? 'grab' : 'pointer',
                 touchAction: isSettings ? 'none' : 'auto',
-                userSelect: 'none'
+                userSelect: 'none',
+                WebkitUserDrag: "none" // ป้องกันลากจาก .tag-banner
             }}
         >
-            <input
+            {!isSettings && <input
                 className="checkbox-wrapper"
                 type="checkbox"
                 checked={isChecked}
                 disabled={isSettings}
                 onChange={handleCheckboxChange}
-            />
+            />}
             <label className="tag-label" style={{ pointerEvents: isSettings ? 'none' : 'auto' }}>
                 {task.title}
             </label>
+
             {isSettings && (
                 <div className="edit-buttons">
                     <DragHandle
-    onTouchStart={handleTouchStart}
-    onMouseDown={handleDragStart}
-/>
-<button 
-    className="delete-button"
-    onClick={(e) => {
-        e.stopPropagation();
-        onDelete(index);
-    }}
-    onTouchStart={(e) => e.stopPropagation()} // เพิ่ม
-    onTouchEnd={(e) => e.stopPropagation()}   // เพิ่ม
-    aria-label="Delete task"
->
-    ❌
-</button>
-
+                        draggable
+                        onDragStart={(e) => {
+                            setIsDragging(true);
+                            e.dataTransfer.setData("text/plain", index.toString());
+                            e.dataTransfer.effectAllowed = "move";
+                        }}
+                        onDragEnd={() => {
+                            setIsDragging(false);
+                            setDragOverIndex(null);
+                        }}
+                        onTouchStart={(e) => {
+                            const touch = e.touches[0];
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            setTouchOffset(touch.clientY - rect.top);
+                            setIsDragging(true);
+                        }}
+                    />
+                    <button 
+                        className="delete-button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(index);
+                        }}
+                        onTouchStart={(e) => e.stopPropagation()}
+                        onTouchEnd={(e) => e.stopPropagation()}
+                        aria-label="Delete task"
+                    >
+                        ❌
+                    </button>
                 </div>
             )}
         </motion.div>

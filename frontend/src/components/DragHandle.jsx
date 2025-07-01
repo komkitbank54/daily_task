@@ -1,18 +1,14 @@
-export default function DragHandle({ onMouseDown, onTouchStart }) {
+export default function DragHandle({ onDragStart, onDragEnd, onTouchStart, ...rest }) {
     return (
-        <button 
+        <div
             className="drag-handle"
-            onMouseDown={(e) => {
-                e.stopPropagation();
-                onMouseDown?.(e); // เรียกของ parent
-            }}
-            onTouchStart={(e) => {
-                e.stopPropagation();
-                onTouchStart?.(e); // เรียกของ parent
-            }}
-            aria-label="Drag to reorder"
+            draggable
+            onDragStart={onDragStart}
+            onDragEnd={onDragEnd}
+            onTouchStart={onTouchStart}
+            {...rest}
         >
-            ⋮⋮
-        </button>
+            ☰
+        </div>
     );
 }

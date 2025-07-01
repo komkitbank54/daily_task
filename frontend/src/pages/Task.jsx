@@ -45,7 +45,9 @@ export default function Task() {
                 </AnimatePresence>
                 {editMode && (
                     <SaveButton
-                        onClick={saveAllTasks}
+                        onClick={() => {
+                            saveAllTasks(toggleEditMode);
+                        }}
                     />
                 )}
             </div>

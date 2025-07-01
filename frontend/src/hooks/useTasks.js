@@ -11,9 +11,9 @@ export function useTasks(editMode = false) {
         fetchTasks();
     }, []);
 
-useEffect(() => {
-  resortTasks();
-}, [editMode]);
+    useEffect(() => {
+        resortTasks();
+    }, [editMode]);
 
     const fetchTasks = async () => {
         try {
@@ -76,19 +76,27 @@ useEffect(() => {
         });
     };
 
-    const saveAllTasks = async () => {
+    const saveAllTasks = async (exitEditMode) => {
         try {
-            const updatePromises = tasks.map((task, index) =>
-                fetch(`${API_BASE_URL}/${task._id}`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ priority: tasks.length - index }),
-                })
-            );
+            const updatePromises = tasks.map((task, index) => {
+                if (task.priority !== index) {
+                    return fetch(`${API_BASE_URL}/${task._id}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ priority: index }),
+                    });
+                } else {
+                    return null;
+                }
+            }).filter(Boolean);
+
             await Promise.all(updatePromises);
             await fetchTasks();
+
+            if (exitEditMode) exitEditMode();
+
         } catch (err) {
-            console.error("Failed to save all tasks:", err);
+            console.error("💥 เซฟ priority ล้มเหลว:", err);
         }
     };
 
