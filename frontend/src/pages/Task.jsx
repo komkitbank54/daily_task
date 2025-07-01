@@ -13,9 +13,9 @@ export default function Task() {
     const { editMode, toggleEditMode } = useAppContext();
     const {
         tasks,
+        reorderTasks,
         toggleTaskCompletion,
         deleteTask,
-        reorderTasks, // เปลี่ยนจาก moveTaskUp/moveTaskDown เป็น reorderTasks
         saveAllTasks,
         loading,
     } = useTasks(editMode);

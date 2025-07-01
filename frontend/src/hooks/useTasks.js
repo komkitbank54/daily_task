@@ -11,11 +11,9 @@ export function useTasks(editMode = false) {
         fetchTasks();
     }, []);
 
-    useEffect(() => {
-        if (!editMode) {
-            resortTasks();
-        }
-    }, [editMode]);
+useEffect(() => {
+  resortTasks();
+}, [editMode]);
 
     const fetchTasks = async () => {
         try {
