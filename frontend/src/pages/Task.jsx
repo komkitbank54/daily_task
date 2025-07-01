@@ -2,9 +2,10 @@ import { AnimatePresence } from "framer-motion";
 import { useTasks } from "../hooks/useTasks";
 import { useAppContext } from "../context/AppContext";
 
-import TaskSettingsButton from "../components/TaskSettingsButton";
+import TaskEditButton from "../components/TaskSettingsButton";
 import TaskItem from "../components/TaskItem";
 import SaveButton from "../components/SaveButton";
+import Loading from "../components/Loading";
 
 import "../css/Task.css";
 
@@ -14,10 +15,12 @@ export default function Task() {
         tasks,
         toggleTaskCompletion,
         deleteTask,
-        moveTaskUp,
-        moveTaskDown,
+        reorderTasks, // เปลี่ยนจาก moveTaskUp/moveTaskDown เป็น reorderTasks
         saveAllTasks,
+        loading,
     } = useTasks(editMode);
+
+    if (loading) return <Loading />;
 
     return (
         <>
@@ -25,7 +28,7 @@ export default function Task() {
                 Daily Tasks
             </h1>
             <div className="tag-grid">
-                <TaskSettingsButton onClick={toggleEditMode} />
+                <TaskEditButton onClick={toggleEditMode} />
                 <AnimatePresence>
                     {tasks.map((task, index) => (
                         <TaskItem
@@ -35,8 +38,8 @@ export default function Task() {
                             onToggle={toggleTaskCompletion}
                             isSettings={editMode}
                             onDelete={deleteTask}
-                            onMoveUp={moveTaskUp}
-                            onMoveDown={moveTaskDown}
+                            onReorder={reorderTasks} // ส่ง reorderTasks แทน onMoveUp/onMoveDown
+                            tasks={tasks} // ส่ง tasks array เพื่อใช้ใน drag and drop
                         />
                     ))}
                 </AnimatePresence>

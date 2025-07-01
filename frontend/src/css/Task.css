@@ -9,6 +9,8 @@
     background-color: rgb(255, 241, 223);
     font-family: "2005_iannnnnAMD", sans-serif;
     font-size: 1.5rem;
+    touch-action: none;
+    user-select: none;
 }
 
 .tag-grid {
@@ -131,21 +133,55 @@
     height: 0.8rem;
 }
 
+.tag-banner {
+    transition: all 0.2s ease;
+}
+
+.tag-banner.dragging {
+    opacity: 0.5;
+    transform: scale(0.95);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.tag-banner.drag-over {
+    border: 2px dashed #007bff;
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
 .drag-handle {
-    position: absolute;
-    right: 0.5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1.2rem;
-    cursor: grab;
-    border: none;
     background: none;
-    padding: 0.1rem 0.3rem;
-    color: #999;
-    z-index: 10;
+    border: none;
+    font-size: 16px;
+    cursor: grab;
+    padding: 4px;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+}
+
+.drag-handle:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
 }
 
 .drag-handle:active {
     cursor: grabbing;
-    color: #333;
+}
+
+/* สำหรับ edit mode */
+.tag-banner[draggable="true"] {
+    cursor: grab;
+}
+
+.tag-banner[draggable="true"]:active {
+    cursor: grabbing;
+}
+
+.edit-buttons {
+    display: flex;
+    gap: 4px;
+    align-items: center;
 }
