@@ -6,9 +6,51 @@
     font-style: normal;
 }
 :root {
-    background-color: rgb(255, 241, 223);
+    background: 
+        /* Pixel Stars */ radial-gradient(
+            0.125rem 0.125rem at 19% 29%,
+            #ffffff,
+            transparent
+        ),
+        radial-gradient(0.0625rem 0.0625rem at 39% 69%, #ffffff, transparent),
+        radial-gradient(0.0625rem 0.0625rem at 89% 39%, #ffffff, transparent),
+        radial-gradient(0.125rem 0.125rem at 29% 79%, #ffffff, transparent),
+        radial-gradient(0.0625rem 0.0625rem at 59% 19%, #ffffff, transparent),
+        radial-gradient(0.125rem 0.125rem at 79% 89%, #ffffff, transparent),
+        radial-gradient(0.0625rem 0.0625rem at 9% 49%, #ffffff, transparent),
+        radial-gradient(0.0625rem 0.0625rem at 69% 59%, #ffffff, transparent),
+        radial-gradient(0.125rem 0.125rem at 49% 9%, #ffffff, transparent),
+        radial-gradient(0.0625rem 0.0625rem at 84% 24%, #ffffff, transparent),
+        radial-gradient(0.0625rem 0.0625rem at 24% 89%, #ffffff, transparent),
+        radial-gradient(0.125rem 0.125rem at 74% 74%, #ffffff, transparent),
+        /* More random pixel stars */
+            radial-gradient(
+                0.0625rem 0.0625rem at 12% 15%,
+                #ffffff,
+                transparent
+            ),
+        radial-gradient(0.125rem 0.125rem at 65% 35%, #ffffff, transparent),
+        radial-gradient(0.0625rem 0.0625rem at 55% 85%, #ffffff, transparent),
+        radial-gradient(0.125rem 0.125rem at 33% 60%, #ffffff, transparent),
+        radial-gradient(0.0625rem 0.0625rem at 77% 22%, #ffffff, transparent),
+        radial-gradient(0.125rem 0.125rem at 41% 51%, #ffffff, transparent),
+        radial-gradient(0.0625rem 0.0625rem at 88% 77%, #ffffff, transparent),
+        radial-gradient(0.125rem 0.125rem at 15% 80%, #ffffff, transparent),
+        radial-gradient(0.0625rem 0.0625rem at 60% 10%, #ffffff, transparent),
+        radial-gradient(0.125rem 0.125rem at 80% 60%, #ffffff, transparent),
+        linear-gradient(
+            180deg,
+            #2d1b69 0%,
+            #5e2a84 20%,
+            #b53f7d 40%,
+            #e85d75 60%,
+            #48bdd1 80%,
+            #0e5677 100%
+        );
+    min-height: 100vh;
     font-family: "2005_iannnnnAMD", sans-serif;
     font-size: 1.5rem;
+    color: #ffffff;
     touch-action: none;
     user-select: none;
 }
@@ -17,29 +59,44 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    background-color: rgb(255, 235, 209);
-    border: 0.05rem solid rgb(255, 235, 209);
-    border-radius: 0.5rem;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.05) 0%,
+        rgba(255, 255, 255, 0.025) 50%,
+        rgba(255, 255, 255, 0.05) 100%
+    );
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
     gap: 0.25rem;
     margin: 1rem;
     height: auto;
     min-height: 10rem;
     padding-top: 2rem;
-    box-shadow: 0 0.25rem 0.3rem rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 4px 16px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .tag-banner {
-    background-color: rgb(255, 241, 223);
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.15) 0%,
+        rgba(187, 187, 187, 0.05) 50%,
+        rgba(255, 255, 255, 0.15) 100%
+    );
+    backdrop-filter: blur(15px);
     display: flex;
     align-items: center;
-    border: 0.025rem solid rgb(255, 233, 206);
-    border-radius: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
     box-sizing: border-box;
     width: auto;
     height: 1.75rem;
     margin: 0rem 0.5rem 0.25rem 0.5rem;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0.1rem 0.1rem 0.1rem rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
     opacity: 1;
     transform: scale(1);
     max-height: 2rem;
@@ -52,8 +109,13 @@
     flex-shrink: 0;
 }
 .tag-banner input[type="checkbox"]:checked {
-    background-color: rgb(255, 241, 223);
-    border: 0.05rem solid rgb(255, 233, 206);
+    background: linear-gradient(
+        135deg,
+        rgba(76, 175, 80, 0.8) 0%,
+        rgba(139, 195, 74, 0.8) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
 }
 
 .tag-banner label {
@@ -75,10 +137,17 @@
 }
 
 .tag-banner-active {
-    background-color: rgb(223, 208, 185);
-    box-shadow: inset -0.1rem -0.1rem 0.15rem rgba(0, 0, 0, 0.1);
+    background: linear-gradient(
+        135deg,
+        rgba(76, 175, 80, 0.4) 0%,
+        rgba(139, 195, 74, 0.3) 50%,
+        rgba(76, 175, 80, 0.4) 100%
+    );
+    border: 1px solid rgba(76, 175, 80, 0.6);
+    box-shadow: 0 4px 16px rgba(76, 175, 80, 0.2),
+        0 2px 8px rgba(76, 175, 80, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
-/
+
 .tag-banner:hover {
     opacity: 1;
 }
