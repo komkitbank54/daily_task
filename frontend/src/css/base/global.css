@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+:root {
+    background: 
+        /* Pixel Stars */ radial-gradient(
+            0.125rem 0.125rem at 19% 29%,
+            #ffffff,
+            transparent
+        ),
+        radial-gradient(0.0625rem 0.0625rem at 39% 69%, #ffffff, transparent),
+        radial-gradient(0.0625rem 0.0625rem at 89% 39%, #ffffff, transparent),
+        radial-gradient(0.125rem 0.125rem at 29% 79%, #ffffff, transparent),
+        radial-gradient(0.0625rem 0.0625rem at 59% 19%, #ffffff, transparent),
+        radial-gradient(0.125rem 0.125rem at 79% 89%, #ffffff, transparent),
+        radial-gradient(0.0625rem 0.0625rem at 9% 49%, #ffffff, transparent),
+        radial-gradient(0.0625rem 0.0625rem at 69% 59%, #ffffff, transparent),
+        radial-gradient(0.125rem 0.125rem at 49% 9%, #ffffff, transparent),
+        radial-gradient(0.0625rem 0.0625rem at 84% 24%, #ffffff, transparent),
+        radial-gradient(0.0625rem 0.0625rem at 24% 89%, #ffffff, transparent),
+        radial-gradient(0.125rem 0.125rem at 74% 74%, #ffffff, transparent),
+        /* More random pixel stars */
+            radial-gradient(
+                0.0625rem 0.0625rem at 12% 15%,
+                #ffffff,
+                transparent
+            ),
+        radial-gradient(0.125rem 0.125rem at 65% 35%, #ffffff, transparent),
+        radial-gradient(0.0625rem 0.0625rem at 55% 85%, #ffffff, transparent),
+        radial-gradient(0.125rem 0.125rem at 33% 60%, #ffffff, transparent),
+        radial-gradient(0.0625rem 0.0625rem at 77% 22%, #ffffff, transparent),
+        radial-gradient(0.125rem 0.125rem at 41% 51%, #ffffff, transparent),
+        radial-gradient(0.0625rem 0.0625rem at 88% 77%, #ffffff, transparent),
+        radial-gradient(0.125rem 0.125rem at 15% 80%, #ffffff, transparent),
+        radial-gradient(0.0625rem 0.0625rem at 60% 10%, #ffffff, transparent),
+        radial-gradient(0.125rem 0.125rem at 80% 60%, #ffffff, transparent),
+        linear-gradient(
+            180deg,
+            #2d1b69 0%,
+            #5e2a84 20%,
+            #b53f7d 40%,
+            #e85d75 60%,
+            #48bdd1 80%,
+            #0e5677 100%
+        );
+    min-height: 100vh;
+    font-family: "2005_iannnnnAMD", sans-serif;
+    font-size: 1.5rem;
+    color: #ffffff;
+    touch-action: none;
+    user-select: none;
+}
+
+.border-test {
+    border: 0.05rem solid rgb(255, 0, 0);
+}

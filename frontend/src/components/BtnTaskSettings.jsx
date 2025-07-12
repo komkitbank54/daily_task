@@ -1,4 +1,3 @@
-import "../css/Task.css";
 import settingsIcon from "../css/icons/white_settings.png";
 
 export default function TaskEditButton({ onClick }) {

@@ -2,12 +2,13 @@ import { AnimatePresence } from "framer-motion";
 import { useTasks } from "../hooks/useTasks";
 import { useAppContext } from "../context/AppContext";
 
-import TaskEditButton from "../components/TaskSettingsButton";
-import TaskItem from "../components/TaskItem";
-import SaveButton from "../components/SaveButton";
+import TaskEditButton from "../components/BtnTaskSettings";
+import TaskItem from "../components/BannerTask";
+import SaveButton from "../components/BtnSave";
+import AddTaskBanner from "../components/BannerAddTask";
 import Loading from "../components/Loading";
 
-import "../css/Task.css";
+import "../css/index.css";
 
 export default function Task() {
     const { editMode, toggleEditMode } = useAppContext();
@@ -24,9 +25,7 @@ export default function Task() {
 
     return (
         <>
-            <h1 className="font-bold text-[2rem] text-center">
-                Daily Tasks
-            </h1>
+            <h1 className="font-bold text-[2rem] text-center">Daily Tasks</h1>
             <div className="tag-grid">
                 <TaskEditButton onClick={toggleEditMode} />
                 <AnimatePresence>
@@ -44,11 +43,21 @@ export default function Task() {
                     ))}
                 </AnimatePresence>
                 {editMode && (
-                    <SaveButton
-                        onClick={() => {
-                            saveAllTasks(toggleEditMode);
-                        }}
-                    />
+                    <>
+                        <AddTaskBanner
+                            onAdd={() => {
+                                const newTask = {
+                                    _id: Date.now(),
+                                    title: "",
+                                    todayCompleted: false,
+                                };
+                                reorderTasks([...tasks, newTask]);
+                            }}
+                        />
+                        <SaveButton
+                            onClick={() => saveAllTasks(toggleEditMode)}
+                        />
+                    </>
                 )}
             </div>
         </>

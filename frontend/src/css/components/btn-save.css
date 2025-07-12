@@ -1,0 +1,21 @@
+.save-button-container {
+    display: flex;
+    justify-content: center;
+    margin: 1rem auto 0.5rem auto;
+}
+
+.save-button {
+    font-size: 1.4rem;
+    padding: 0rem 1rem;
+    background-color: rgb(87, 150, 90);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    box-shadow: 0 0.2rem 0.3rem rgba(0, 0, 0, 0.2);
+}
+
+.save-button:hover {
+    background-color: rgb(70, 130, 70);
+}
