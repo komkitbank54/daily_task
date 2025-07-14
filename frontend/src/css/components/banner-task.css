@@ -1,7 +1,8 @@
-.tag-grid {
+.task-grid {
     position: relative;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     background: linear-gradient(
         135deg,
         rgba(255, 255, 255, 0.05) 0%,
@@ -12,16 +13,17 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px;
     gap: 0.25rem;
-    margin: 1rem;
+    margin: 0.6rem 1rem;
     height: auto;
     min-height: 10rem;
+    max-width: 16rem;
     padding-top: 2rem;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 4px 16px rgba(0, 0, 0, 0.05),
         inset 0 1px 0 rgba(255, 255, 255, 0.3);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.tag-banner {
+.task-banner {
     background: linear-gradient(
         135deg,
         rgba(255, 255, 255, 0.15) 0%,
@@ -32,7 +34,7 @@
     display: flex;
     align-items: center;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 15px;
+    border-radius: 0.5rem;
     box-sizing: border-box;
     width: auto;
     height: 1.75rem;
@@ -48,11 +50,11 @@
     transition: all 0.2s ease;
 }
 
-.tag-banner input[type="checkbox"] {
+.task-banner input[type="checkbox"] {
     width: 0.5rem;
     flex-shrink: 0;
 }
-.tag-banner input[type="checkbox"]:checked {
+.task-banner input[type="checkbox"]:checked {
     background: linear-gradient(
         135deg,
         rgba(76, 175, 80, 0.8) 0%,
@@ -62,7 +64,7 @@
     box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
 }
 
-.tag-banner label {
+.task-banner label {
     display: flex;
     align-items: center;
     font-size: 1.5rem;
@@ -80,7 +82,7 @@
     margin-left: 1rem;
 }
 
-.tag-banner-active {
+.task-banner-active {
     background: linear-gradient(
         135deg,
         rgba(76, 175, 80, 0.4) 0%,
@@ -92,21 +94,21 @@
         0 2px 8px rgba(76, 175, 80, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
-.tag-banner:hover {
+.task-banner:hover {
     transform: translateY(-0.05rem);
     box-shadow: 0.15rem 0.15rem 0.15rem rgba(0, 0, 0, 0.15);
     opacity: 1;
 }
 
-.tag-banner-removing:hover {
+.task-banner-removing:hover {
     transform: scale(0.95) !important;
 }
 
-.tag-grid > .tag-banner + .tag-banner {
+.task-grid > .task-banner + .task-banner {
     transition: margin-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.tag-settings {
+.task-settings {
     position: absolute;
     top: 0.75rem;
     right: 0.75rem;
@@ -117,13 +119,13 @@
     height: 0.8rem;
 }
 
-.tag-banner.dragging {
+.task-banner.dragging {
     opacity: 0.5;
     transform: scale(0.95);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.tag-banner.drag-over {
+.task-banner.drag-over {
     border: 2px dashed #007bff;
     background-color: rgba(0, 123, 255, 0.1);
 }
@@ -152,11 +154,11 @@
 }
 
 /* สำหรับ edit mode */
-.tag-banner[draggable="true"] {
+.task-banner[draggable="true"] {
     cursor: grab;
 }
 
-.tag-banner[draggable="true"]:active {
+.task-banner[draggable="true"]:active {
     cursor: grabbing;
 }
 
@@ -166,14 +168,14 @@
     align-items: center;
 }
 
-.tag-banner.drag-enabled {
+.task-banner.drag-enabled {
     background-color: #74ffff42;
     cursor: grab;
     animation: drag-hint-pulse 1.5s infinite ease-in-out;
     border: 0.11rem dashed rgb(0, 81, 255);
 }
 
-.tag-banner.drag-enabled:active {
+.task-banner.drag-enabled:active {
     cursor: grabbing;
 }
 
@@ -186,5 +188,11 @@
     }
     100% {
         box-shadow: 0 0 0 0 rgba(255,255,255,0);
+    }
+}
+
+@media (min-width: 425px) {
+    .task-grid {
+        margin: 0.6rem auto;
     }
 }

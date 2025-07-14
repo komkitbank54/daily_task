@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { useState, useRef } from "react";
-
 import { useEffect } from "react";
 
 export default function TaskItem({
@@ -32,11 +31,29 @@ export default function TaskItem({
                 touch.clientY
             );
             const taskElement = elements.find((el) =>
-                el.classList.contains("tag-banner")
+                el.classList.contains("task-banner")
             );
 
             if (taskElement && taskElement !== el) {
-                const allTasks = document.querySelectorAll(".tag-banner");
+                const allTasks = document.querySelectorAll(".task-banner");
+                const hoveredIndex = Array.from(allTasks).indexOf(taskElement);
+                if (hoveredIndex !== -1) {
+                    setDragOverIndex(hoveredIndex);
+                }
+            }
+        };
+        
+        const handleMouseMove = (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+
+            const elements = document.elementsFromPoint(e.clientX, e.clientY);
+            const taskElement = elements.find((el) =>
+                el.classList.contains("task-banner")
+            );
+
+            if (taskElement && taskElement !== el) {
+                const allTasks = document.querySelectorAll(".task-banner");
                 const hoveredIndex = Array.from(allTasks).indexOf(taskElement);
                 if (hoveredIndex !== -1) {
                     setDragOverIndex(hoveredIndex);
@@ -45,15 +62,34 @@ export default function TaskItem({
         };
 
         el.addEventListener("touchmove", handleTouchMove, { passive: false });
+        document.addEventListener("mousemove", handleMouseMove);
 
         return () => {
             el.removeEventListener("touchmove", handleTouchMove);
+            document.removeEventListener("mousemove", handleMouseMove);
         };
     }, [isSettings, isDragging]);
+
+    const handleDragStart = (e) => {
+        if (!isSettings) return;
+        setIsDragging(true);
+        e.dataTransfer.setData("text/plain", index.toString());
+        e.dataTransfer.effectAllowed = "move";
+        
+        // เพิ่ม ghost image ที่ใส
+        const ghost = document.createElement("div");
+        ghost.style.opacity = "0.5";
+        ghost.style.transform = "scale(0.8)";
+        document.body.appendChild(ghost);
+        e.dataTransfer.setDragImage(ghost, 0, 0);
+        
+        setTimeout(() => document.body.removeChild(ghost), 0);
+    };
 
     const handleDragOver = (e) => {
         if (!isSettings) return;
         e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
         setDragOverIndex(index);
     };
 
@@ -61,33 +97,24 @@ export default function TaskItem({
         if (!isSettings) return;
         e.preventDefault();
         const draggedIndex = parseInt(e.dataTransfer.getData("text/plain"));
-        if (draggedIndex !== index) {
+        if (draggedIndex !== index && !isNaN(draggedIndex)) {
             onReorder(draggedIndex, index);
         }
         setDragOverIndex(null);
         setIsDragging(false);
     };
 
-    const handleTouchMove = (e) => {
-        if (!isSettings || !isDragging) return;
-        e.preventDefault();
+    const handleDragEnd = () => {
+        setIsDragging(false);
+        setDragOverIndex(null);
+    };
 
+    const handleTouchStart = (e) => {
+        if (!isSettings) return;
         const touch = e.touches[0];
-        const elements = document.elementsFromPoint(
-            touch.clientX,
-            touch.clientY
-        );
-        const taskElement = elements.find((el) =>
-            el.classList.contains("tag-banner")
-        );
-
-        if (taskElement && taskElement !== dragElementRef.current) {
-            const allTasks = document.querySelectorAll(".tag-banner");
-            const hoveredIndex = Array.from(allTasks).indexOf(taskElement);
-            if (hoveredIndex !== -1) {
-                setDragOverIndex(hoveredIndex);
-            }
-        }
+        const rect = e.currentTarget.getBoundingClientRect();
+        setTouchOffset(touch.clientY - rect.top);
+        setIsDragging(true);
     };
 
     const handleTouchEnd = (e) => {
@@ -101,12 +128,12 @@ export default function TaskItem({
         );
         const taskElement = elements.find(
             (el) =>
-                el.classList.contains("tag-banner") &&
+                el.classList.contains("task-banner") &&
                 el !== dragElementRef.current
         );
 
         if (taskElement) {
-            const allTasks = document.querySelectorAll(".tag-banner");
+            const allTasks = document.querySelectorAll(".task-banner");
             const droppedIndex = Array.from(allTasks).indexOf(taskElement);
 
             if (droppedIndex !== -1) {
@@ -137,24 +164,10 @@ export default function TaskItem({
             ref={dragElementRef}
             key={task._id}
             layout
-            draggable={isSettings} // <-- สำคัญ
-            onDragStart={(e) => {
-                if (!isSettings) return;
-                setIsDragging(true);
-                e.dataTransfer.setData("text/plain", index.toString());
-                e.dataTransfer.effectAllowed = "move";
-            }}
-            onDragEnd={() => {
-                setIsDragging(false);
-                setDragOverIndex(null);
-            }}
-            onTouchStart={(e) => {
-                if (!isSettings) return;
-                const touch = e.touches[0];
-                const rect = e.currentTarget.getBoundingClientRect();
-                setTouchOffset(touch.clientY - rect.top);
-                setIsDragging(true);
-            }}
+            draggable={isSettings}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
             onDragOver={handleDragOver}
             onDragLeave={() => setDragOverIndex(null)}
@@ -168,15 +181,16 @@ export default function TaskItem({
             }}
             exit={{ opacity: 0, y: 0 }}
             transition={{ duration: isDragging ? 0 : 0.3 }}
-            className={`tag-banner${isChecked ? " tag-banner-active" : ""}${
+            className={`task-banner${isChecked ? " task-banner-active" : ""}${
                 dragOverIndex === index ? " drag-over" : ""
             }${isDragging ? " dragging" : ""} ${
                 isSettings ? "drag-enabled" : ""
-            }`} // <-- เพิ่มคลาส
+            }`}
             style={{
                 touchAction: isSettings ? "none" : "auto",
                 userSelect: "none",
-                WebkitUserDrag: "none",
+                WebkitUserDrag: isSettings ? "element" : "none",
+                cursor: isSettings ? "grab" : "default",
             }}
         >
             {!isSettings && (
@@ -189,8 +203,11 @@ export default function TaskItem({
                 />
             )}
             <label
-                className="tag-label"
-                style={{ pointerEvents: isSettings ? "none" : "auto" }}
+                className="task-label"
+                style={{ 
+                    pointerEvents: isSettings ? "none" : "auto",
+                    cursor: isSettings ? "grab" : "default"
+                }}
             >
                 {task.title}
             </label>

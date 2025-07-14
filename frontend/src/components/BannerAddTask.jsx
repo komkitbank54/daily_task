@@ -1,10 +1,10 @@
 import "../css/components/banner-add-task.css";
 
-export default function AddTaskBanner({ onAdd }) {
+export default function AddTaskBanner({ onClick }) {
     return (
-        <div className="add-task-banner" onClick={onAdd}>
-            <span className="plus-icon">＋</span>
-            <span className="add-text">เพิ่ม Task ใหม่</span>
+        <div className="add-task-banner" onClick={onClick}>
+            <label className="add-task-icon-text">+</label>
+            <label className="add-task-text">เพิ่ม Task ใหม่</label>
         </div>
     );
 }

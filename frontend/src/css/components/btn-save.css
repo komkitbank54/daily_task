@@ -14,8 +14,15 @@
     cursor: pointer;
     transition: background-color 0.2s ease;
     box-shadow: 0 0.2rem 0.3rem rgba(0, 0, 0, 0.2);
+    transition: opacity 0.5s ease;
 }
 
-.save-button:hover {
+/* .save-button:hover {
     background-color: rgb(70, 130, 70);
+} */
+
+.save-button:disabled,
+.save-button.dimmed {
+    opacity: 0.5;
+    cursor: not-allowed;
 }

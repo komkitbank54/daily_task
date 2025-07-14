@@ -86,7 +86,37 @@ export function useTasks(editMode = false) {
         });
     };
 
+    const hasUpdated = () => {
+        const boolean = tasks.some((task, index) => task.priority !== index);
+        // console.log(boolean)
+        return boolean
+    }
+
+    const addTask = async (newTask) => {
+    try {
+        const res = await fetch(`${API_BASE_URL}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newTask),
+        });
+
+        if (!res.ok) {
+        throw new Error(`Failed to add task: ${res.status}`);
+        }
+
+        await fetchTasks();
+    } catch (err) {
+        console.error("Error adding task:", err);
+    }
+    };
+
+
     const saveAllTasks = async (exitEditMode) => {
+        console.log("tasks:", tasks);
+        if (!hasUpdated()) {
+            console.warn("There is no tasks updated.");
+            return;
+        }
         try {
             const updatePromises = tasks
                 .map((task, index) => {
@@ -116,6 +146,8 @@ export function useTasks(editMode = false) {
         reorderTasks,
         toggleTaskCompletion,
         deleteTask,
+        hasUpdated,
+        addTask,
         saveAllTasks,
         loading,
     };

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useTasks } from "../hooks/useTasks";
 import { useAppContext } from "../context/AppContext";
@@ -6,17 +7,21 @@ import TaskEditButton from "../components/BtnTaskSettings";
 import TaskItem from "../components/BannerTask";
 import SaveButton from "../components/BtnSave";
 import AddTaskBanner from "../components/BannerAddTask";
+import AddTaskModal from "../components/ModalAddTask";
 import Loading from "../components/Loading";
 
 import "../css/index.css";
 
 export default function Task() {
     const { editMode, toggleEditMode } = useAppContext();
+    const [showAddModal, setShowAddModal] = useState(false);
     const {
         tasks,
         reorderTasks,
         toggleTaskCompletion,
         deleteTask,
+        hasUpdated,
+        addTask,
         saveAllTasks,
         loading,
     } = useTasks(editMode);
@@ -25,8 +30,8 @@ export default function Task() {
 
     return (
         <>
-            <h1 className="font-bold text-[2rem] text-center">Daily Tasks</h1>
-            <div className="tag-grid">
+            <h1 className="font-bold text-[2rem] text-center">Tasks</h1>
+            <div className="task-grid">
                 <TaskEditButton onClick={toggleEditMode} />
                 <AnimatePresence>
                     {tasks.map((task, index) => (
@@ -37,29 +42,31 @@ export default function Task() {
                             onToggle={toggleTaskCompletion}
                             isSettings={editMode}
                             onDelete={deleteTask}
-                            onReorder={reorderTasks} // ส่ง reorderTasks แทน onMoveUp/onMoveDown
-                            tasks={tasks} // ส่ง tasks array เพื่อใช้ใน drag and drop
+                            onReorder={reorderTasks}
+                            tasks={tasks}
                         />
                     ))}
                 </AnimatePresence>
                 {editMode && (
                     <>
                         <AddTaskBanner
-                            onAdd={() => {
-                                const newTask = {
-                                    _id: Date.now(),
-                                    title: "",
-                                    todayCompleted: false,
-                                };
-                                reorderTasks([...tasks, newTask]);
-                            }}
+                        onClick={() => setShowAddModal(true)}
                         />
                         <SaveButton
                             onClick={() => saveAllTasks(toggleEditMode)}
+                            isUpdated={hasUpdated()}
                         />
                     </>
                 )}
             </div>
+                                    <AddTaskModal
+                            isOpen={showAddModal}
+                            onClose={() => setShowAddModal(false)}
+                            onSave={(newTask) => {
+                                addTask(newTask);
+                                setShowAddModal(false);
+                            }}
+                            />
         </>
     );
 }
