@@ -74,16 +74,16 @@ export function useTasks(editMode = false) {
     };
 
     const deleteTask = async (task) => {
-  try {
-    await fetch(`${API_BASE_URL}/${task._id}`, {
-      method: "DELETE",
-    });
-    await fetchTasks();
-  } catch (err) {
-    console.error("Failed to delete task:", err);
-  }
-};
-
+        console.log(task._id)
+        try {
+            await fetch(`${API_BASE_URL}/${task._id}`, {
+                method: "DELETE",
+            });
+            await fetchTasks();
+        } catch (err) {
+            console.error("Failed to delete task:", err);
+        }
+    };
 
     const reorderTasks = (fromIndex, toIndex) => {
         setTasks((prevTasks) => {
@@ -97,27 +97,26 @@ export function useTasks(editMode = false) {
     const hasUpdated = () => {
         const boolean = tasks.some((task, index) => task.priority !== index);
         // console.log(boolean)
-        return boolean
-    }
-
-    const addTask = async (newTask) => {
-    try {
-        const res = await fetch(`${API_BASE_URL}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newTask),
-        });
-
-        if (!res.ok) {
-        throw new Error(`Failed to add task: ${res.status}`);
-        }
-
-        await fetchTasks();
-    } catch (err) {
-        console.error("Error adding task:", err);
-    }
+        return boolean;
     };
 
+    const addTask = async (newTask) => {
+        try {
+            const res = await fetch(`${API_BASE_URL}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(newTask),
+            });
+
+            if (!res.ok) {
+                throw new Error(`Failed to add task: ${res.status}`);
+            }
+
+            await fetchTasks();
+        } catch (err) {
+            console.error("Error adding task:", err);
+        }
+    };
 
     const saveAllTasks = async (exitEditMode) => {
         console.log("tasks:", tasks);

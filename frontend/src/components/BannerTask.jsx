@@ -218,7 +218,7 @@ export default function TaskItem({
                         className="delete-button"
                         onClick={(e) => {
                             e.stopPropagation();
-                            onDelete(index);
+                            onDelete(task);
                         }}
                         onTouchStart={(e) => e.stopPropagation()}
                         onTouchEnd={(e) => e.stopPropagation()}

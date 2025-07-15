@@ -3,13 +3,16 @@ import { AnimatePresence } from "framer-motion";
 import { useTasks } from "../hooks/useTasks";
 import { useAppContext } from "../context/AppContext";
 
-import TaskEditButton from "../components/BtnTaskSettings";
-import TaskItem from "../components/BannerTask";
-import SaveButton from "../components/BtnSave";
-import AddTaskBanner from "../components/BannerAddTask";
-import AddTaskModal from "../components/ModalAddTask";
-import ConfirmModal from "../components/ModalConfirm";
-import Loading from "../components/Loading";
+import {
+  TaskEditButton,
+  SaveButton,
+  AddTaskModal,
+  ConfirmModal,
+  Loading,
+  AddTaskBanner,
+  TaskItem,
+} from "../components";
+
 
 import "../css/index.css";
 
@@ -29,6 +32,26 @@ export default function Task() {
     } = useTasks(editMode);
 
     if (loading) return <Loading />;
+
+    if (!tasks || tasks.length === 0) {
+        return (
+            <>
+                <h1 className="font-bold text-[2rem] text-center">Tasks</h1>
+                <div className="task-grid">
+                    <TaskEditButton onClick={toggleEditMode} />
+                    <AddTaskBanner onClick={() => setShowAddModal(true)} />
+                </div>
+                <AddTaskModal
+                    isOpen={showAddModal}
+                    onClose={() => setShowAddModal(false)}
+                    onSave={(newTask) => {
+                        addTask(newTask);
+                        setShowAddModal(false);
+                    }}
+                />
+            </>
+        );
+    }
 
     return (
         <>
@@ -51,9 +74,7 @@ export default function Task() {
                 </AnimatePresence>
                 {editMode && (
                     <>
-                        <AddTaskBanner
-                        onClick={() => setShowAddModal(true)}
-                        />
+                        <AddTaskBanner onClick={() => setShowAddModal(true)} />
                         <SaveButton
                             onClick={() => saveAllTasks(toggleEditMode)}
                             isUpdated={hasUpdated()}
@@ -61,24 +82,23 @@ export default function Task() {
                     </>
                 )}
             </div>
-                                    <AddTaskModal
-                            isOpen={showAddModal}
-                            onClose={() => setShowAddModal(false)}
-                            onSave={(newTask) => {
-                                addTask(newTask);
-                                setShowAddModal(false);
-                            }}
-                            />
-                            <ConfirmModal
-                                isOpen={!!taskToDelete}
-                                task={taskToDelete}
-                                onClose={() => setTaskToDelete(null)}
-                                onConfirm={() => {
-                                    deleteTask(taskToDelete);
-                                    setTaskToDelete(null);
-                                }}
-                            />
-
+            <AddTaskModal
+                isOpen={showAddModal}
+                onClose={() => setShowAddModal(false)}
+                onSave={(newTask) => {
+                    addTask(newTask);
+                    setShowAddModal(false);
+                }}
+            />
+            <ConfirmModal
+                isOpen={!!taskToDelete}
+                task={taskToDelete}
+                onClose={() => setTaskToDelete(null)}
+                onConfirm={() => {
+                    deleteTask(taskToDelete);
+                    setTaskToDelete(null);
+                }}
+            />
         </>
     );
 }
