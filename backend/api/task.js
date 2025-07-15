@@ -77,21 +77,31 @@ router.put('/tasks/:id', async (req, res) => {
 
 
 
-// DELETE a task by id or all tasks if no id is provided
-router.delete('/tasks/delete', async (req, res) => {
-    try {
-        if (req.query.id) {
-            const task = await Task.findById(req.query.id);
-            if (!task) return res.status(404).json({ message: 'Task not found' });
-            await task.deleteOne();
-            res.json({ message: 'Task deleted successfully' });
-        } else {
-            await Task.deleteMany({});
-            res.json({ message: 'All tasks deleted successfully' });
-        }
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+// DELETE task by ID (query param) or all tasks
+router.delete('/tasks/:id', async (req, res) => {
+  try {
+    const { id } = req.query;
+
+    if (id) {
+      // เช็คว่าเป็น ObjectId ที่ valid
+      if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+        return res.status(400).json({ message: 'Invalid task ID' });
+      }
+
+      const task = await Task.findById(id);
+      if (!task) return res.status(404).json({ message: 'Task not found' });
+
+      await task.deleteOne();
+      return res.json({ message: 'Task deleted successfully' });
     }
+
+    // ไม่มี id → ลบทั้งหมด
+    await Task.deleteMany({});
+    res.json({ message: 'All tasks deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
+
 
 module.exports = router;

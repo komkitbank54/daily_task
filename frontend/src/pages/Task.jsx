@@ -8,6 +8,7 @@ import TaskItem from "../components/BannerTask";
 import SaveButton from "../components/BtnSave";
 import AddTaskBanner from "../components/BannerAddTask";
 import AddTaskModal from "../components/ModalAddTask";
+import ConfirmModal from "../components/ModalConfirm";
 import Loading from "../components/Loading";
 
 import "../css/index.css";
@@ -15,6 +16,7 @@ import "../css/index.css";
 export default function Task() {
     const { editMode, toggleEditMode } = useAppContext();
     const [showAddModal, setShowAddModal] = useState(false);
+    const [taskToDelete, setTaskToDelete] = useState(null);
     const {
         tasks,
         reorderTasks,
@@ -41,7 +43,7 @@ export default function Task() {
                             index={index}
                             onToggle={toggleTaskCompletion}
                             isSettings={editMode}
-                            onDelete={deleteTask}
+                            onDelete={(task) => setTaskToDelete(task)}
                             onReorder={reorderTasks}
                             tasks={tasks}
                         />
@@ -67,6 +69,16 @@ export default function Task() {
                                 setShowAddModal(false);
                             }}
                             />
+                            <ConfirmModal
+                                isOpen={!!taskToDelete}
+                                task={taskToDelete}
+                                onClose={() => setTaskToDelete(null)}
+                                onConfirm={() => {
+                                    deleteTask(taskToDelete);
+                                    setTaskToDelete(null);
+                                }}
+                            />
+
         </>
     );
 }

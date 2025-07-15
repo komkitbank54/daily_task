@@ -73,9 +73,17 @@ export function useTasks(editMode = false) {
         }
     };
 
-    const deleteTask = (index) => {
-        setTasks((prevTasks) => prevTasks.filter((_, i) => i !== index));
-    };
+    const deleteTask = async (task) => {
+  try {
+    await fetch(`${API_BASE_URL}/${task._id}`, {
+      method: "DELETE",
+    });
+    await fetchTasks();
+  } catch (err) {
+    console.error("Failed to delete task:", err);
+  }
+};
+
 
     const reorderTasks = (fromIndex, toIndex) => {
         setTasks((prevTasks) => {

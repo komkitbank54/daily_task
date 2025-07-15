@@ -1,4 +1,4 @@
-export default function ConfirmModal({ isOpen, onClose, onConfirm, task, textHeader, textDetail, textConfirm, textCancel}) {
+export default function ConfirmModal({ isOpen, onClose, onConfirm, task, textHeader = "คุณยืนยันหรือไม่", textDetail = "", textConfirm = "ยืนยัน", textCancel = "ยกเลิก"}) {
   if (!isOpen) return null;
 
   return (
