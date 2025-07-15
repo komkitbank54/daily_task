@@ -33,7 +33,8 @@
         radial-gradient(0.125rem 0.125rem at 15% 80%, #ffffff, transparent),
         radial-gradient(0.0625rem 0.0625rem at 60% 10%, #ffffff, transparent),
         radial-gradient(0.125rem 0.125rem at 80% 60%, #ffffff, transparent),
-        linear-gradient(
+        black;
+        /* linear-gradient(
             180deg,
             #2d1b69 0%,
             #5e2a84 20%,
@@ -41,7 +42,7 @@
             #e85d75 60%,
             #48bdd1 80%,
             #0e5677 100%
-        );
+        ); */
     min-height: 100vh;
     font-family: "2005_iannnnnAMD", sans-serif;
     font-size: 1.5rem;

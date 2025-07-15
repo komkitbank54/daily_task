@@ -5,9 +5,9 @@
     justify-content: center;
     background: linear-gradient(
         135deg,
-        rgba(255, 255, 255, 0.05) 0%,
-        rgba(255, 255, 255, 0.025) 50%,
-        rgba(255, 255, 255, 0.05) 100%
+        rgba(255, 255, 255, 0.219) 0%,
+        rgba(255, 255, 255, 0.041) 50%,
+        rgba(255, 255, 255, 0.205) 100%
     );
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
