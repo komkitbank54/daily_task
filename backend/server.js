@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const taskRoutes = require("./api/task");
 const userRoutes = require("./api/user");
+const gridRoutes = require("./api/grid");
 
 const port = process.env.PORT || 5000;
 
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use(cors());
 app.use("/api", taskRoutes);
 app.use("/api", userRoutes);
+app.use("/api", gridRoutes);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
