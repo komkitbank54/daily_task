@@ -29,6 +29,7 @@ export function useTasks(editMode = false) {
                 throw new Error("Invalid data format: expected an array.");
             }
 
+            console.log(`test ${data}`);
             setTasks(sortTasks(data));
         } catch (err) {
             console.error("Error fetching tasks:", err);
@@ -39,7 +40,6 @@ export function useTasks(editMode = false) {
 
     const sortTasks = (taskList) => {
         return [...taskList].sort((a, b) => {
-            // ใน edit mode ไม่เรียงตาม completion status
             if (a.todayCompleted !== b.todayCompleted && !editMode) {
                 return a.todayCompleted ? 1 : -1;
             }
