@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Task = require('../models/taskSchema');
 const User = require('../models/userSchema');
+const Grid = require('../models/gridSchema');
 
 // CREATE a new task
 router.post('/tasks', async (req, res) => {
@@ -16,6 +17,7 @@ router.post('/tasks', async (req, res) => {
 
     const task = new Task({
         user: req.body.user,
+        grid: req.body.grid,
         title: req.body.title,
         description: req.body.description,
         todayCompleted: req.body.completed,
@@ -23,13 +25,18 @@ router.post('/tasks', async (req, res) => {
     });
 
     // Check for required fields
-    if (!task.user || !task.title || !task.description) {
-        return res.status(400).json({ message: 'User, title, and description are required' });
+    if (!task.user || !task.title || !task.description || !task.grid) {
+        return res.status(400).json({ message: 'User, title, grid, and description are required' });
     }
 
     const existingUser = await User.findOne({ username: task.user });
     if (!existingUser) {
         return res.status(400).json({ message: 'User does not exist' });
+    }
+
+    const existingGrid = await Grid.findOne({ grid_name: task.grid });
+    if (!existingGrid) {
+      return res.status(400).json({ message: 'Grid does not exist'});
     }
 
     try {

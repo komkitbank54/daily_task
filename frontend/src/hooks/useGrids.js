@@ -25,6 +25,7 @@ export function useGrids() {
         }
 
         setGrids((data));
+        console.log(`data= ${data}`)
       } catch (err) {
         console.error("Error fetching tasks:", err);
       }

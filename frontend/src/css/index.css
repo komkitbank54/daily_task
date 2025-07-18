@@ -3,4 +3,5 @@
 @import "./components/banner-task.css";
 @import "./components/btn-save.css";
 @import "./components/banner-add-task.css";
-@import "./components/modal-add.css"
+@import "./components/modal-add.css";
+@import "./components/grid.css";

@@ -29,7 +29,6 @@ export function useTasks(editMode = false) {
                 throw new Error("Invalid data format: expected an array.");
             }
 
-            console.log(`test ${data}`);
             setTasks(sortTasks(data));
         } catch (err) {
             console.error("Error fetching tasks:", err);
@@ -101,6 +100,7 @@ export function useTasks(editMode = false) {
     };
 
     const addTask = async (newTask) => {
+        console.log(JSON.stringify(newTask))
         try {
             const res = await fetch(`${API_BASE_URL}`, {
                 method: "POST",
