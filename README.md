@@ -1,8 +1,20 @@
-# 🗂 Daily Task Tracker (React + MongoDB + Node)
+# Task Tracker (React + Node + MongoDB)
 
 ---
 
-## 🧠 Tech Stack
+## Comment
+
+I have developed many React projects before. But this time I tried to practice by using ChatGPT as little as possible (not for vide coding).
+This is the first project where I really tried to practice seriously by myself. I found a lot of my own problems while doing this project.
+It is really an easy project for someone else, but after I finish this, I will move on to bigger projects for more challenge to improve myself.
+
+#### I HAVE PAUSED THIS PROJECT FOR NOW. I HAVE A NEW PROJECT IDEA.
+
+---
+
+## Tech Stack
+
+- Dev on Node 22.15.0
 
 - Frontend: React.js + Framer Motion
 - Backend: Node.js + Express
@@ -10,30 +22,22 @@
 
 ---
 
-## 📦 โฟลเดอร์หลักใน `src/`
-
-├── components/ // พวก UI ที่เอาไว้ใช้ซ้ำได้ เช่น <TaskItem />
-├── hooks/ // logic แยกต่างหาก เช่น การ fetch / update task
-├── pages/ // หน้าหลักของแอพ (เช่น App.jsx)
-├── css/ // style ทั้งหมด
-└── main.jsx // จุดเริ่มของแอพ
-
----
-
-## 🚀 วิธีใช้งาน
+## How to use
 
 ```bash
-git clone <project-url>
+git clone <this project url>
 
-- frontend
+# frontend
 cd daily-task
 cd frontend
 pnpm install
-pnpm run dev
 
-- backend
+# backend
 cd daily-task
 cd backend
 npm install
-npm run dev
 
+# run
+cd daily-task
+npm install
+npm run dev
