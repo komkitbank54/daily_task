@@ -62,13 +62,15 @@ router.get('/tasks', async (req, res) => {
 });
 
 // EDIT a task by id
-router.put('/tasks/:id', async (req, res) => {
+router.put('/tasks', async (req, res) => {
   try {
-    const task = await Task.findById(req.params.id);
+    const {id, grid} = req.query;
+
+    const task = await Task.findOne({ _id: id, grid: grid });
     if (!task) return res.status(404).json({ message: 'Task not found' });
 
-    // แก้เฉพาะ field ที่ส่งมา
     if (req.body.title !== undefined) task.title = req.body.title;
+    if (req.body.grid !== undefined) task.grid = req.body.grid;
     if (req.body.description !== undefined) task.description = req.body.description;
     if (req.body.priority !== undefined) task.priority = req.body.priority;
     if (req.body.completed !== undefined) task.completed = req.body.completed;

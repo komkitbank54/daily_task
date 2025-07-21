@@ -1,234 +1,195 @@
 import { motion } from "framer-motion";
-import { useState, useRef } from "react";
-import { useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function TaskItem({
-    task,
-    grid,
-    index,
-    onToggle,
-    isSettings,
-    onDelete,
-    onReorder,
+  task,
+  onToggle,
+  isSettings,
+  onDelete,
+  onReorder,
 }) {
-    const [isDragging, setIsDragging] = useState(false);
-    const [dragOverIndex, setDragOverIndex] = useState(null);
-    const [touchOffset, setTouchOffset] = useState(0);
-    const dragElementRef = useRef(null);
-    const isChecked = isSettings ? false : task.todayCompleted;
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOverId, setDragOverId] = useState(null);
+  const dragElementRef = useRef(null);
 
-    useEffect(() => {
-        if (!isSettings || !dragElementRef.current) return;
+  const isChecked = !isSettings && task.todayCompleted;
 
-        const el = dragElementRef.current;
+  // 👉 สำหรับ mouse drag-over
+  useEffect(() => {
+    if (!isSettings || !dragElementRef.current) return;
 
-        const handleTouchMove = (e) => {
-            if (!isDragging) return;
-            e.preventDefault();
+    const el = dragElementRef.current;
 
-            const touch = e.touches[0];
-            const elements = document.elementsFromPoint(
-                touch.clientX,
-                touch.clientY
-            );
-            const taskElement = elements.find((el) =>
-                el.classList.contains("task-banner")
-            );
+    const handleMouseMove = (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
 
-            if (taskElement && taskElement !== el) {
-                const allTasks = document.querySelectorAll(".task-banner");
-                const hoveredIndex = Array.from(allTasks).indexOf(taskElement);
-                if (hoveredIndex !== -1) {
-                    setDragOverIndex(hoveredIndex);
-                }
-            }
-        };
-        
-        const handleMouseMove = (e) => {
-            if (!isDragging) return;
-            e.preventDefault();
+      const elements = document.elementsFromPoint(e.clientX, e.clientY);
+      const taskElement = elements.find((el) =>
+        el.classList.contains("task-banner")
+      );
 
-            const elements = document.elementsFromPoint(e.clientX, e.clientY);
-            const taskElement = elements.find((el) =>
-                el.classList.contains("task-banner")
-            );
-
-            if (taskElement && taskElement !== el) {
-                const allTasks = document.querySelectorAll(".task-banner");
-                const hoveredIndex = Array.from(allTasks).indexOf(taskElement);
-                if (hoveredIndex !== -1) {
-                    setDragOverIndex(hoveredIndex);
-                }
-            }
-        };
-
-        el.addEventListener("touchmove", handleTouchMove, { passive: false });
-        document.addEventListener("mousemove", handleMouseMove);
-
-        return () => {
-            el.removeEventListener("touchmove", handleTouchMove);
-            document.removeEventListener("mousemove", handleMouseMove);
-        };
-    }, [isSettings, isDragging]);
-
-    const handleDragStart = (e) => {
-        if (!isSettings) return;
-        setIsDragging(true);
-        e.dataTransfer.setData("text/plain", index.toString());
-        e.dataTransfer.effectAllowed = "move";
-        
-        // เพิ่ม ghost image ที่ใส
-        const ghost = document.createElement("div");
-        ghost.style.opacity = "0.5";
-        ghost.style.transform = "scale(0.8)";
-        document.body.appendChild(ghost);
-        e.dataTransfer.setDragImage(ghost, 0, 0);
-        
-        setTimeout(() => document.body.removeChild(ghost), 0);
+      if (taskElement && taskElement !== el) {
+        setDragOverId(taskElement.dataset.id);
+      }
     };
 
-    const handleDragOver = (e) => {
-        if (!isSettings) return;
-        e.preventDefault();
-        e.dataTransfer.dropEffect = "move";
-        setDragOverIndex(index);
-    };
+    document.addEventListener("mousemove", handleMouseMove);
+    return () => document.removeEventListener("mousemove", handleMouseMove);
+  }, [isSettings, isDragging]);
 
-    const handleDrop = (e) => {
-        if (!isSettings) return;
-        e.preventDefault();
-        const draggedIndex = parseInt(e.dataTransfer.getData("text/plain"));
-        if (draggedIndex !== index && !isNaN(draggedIndex)) {
-            onReorder(draggedIndex, index);
-        }
-        setDragOverIndex(null);
-        setIsDragging(false);
-    };
+  // 👉 Mouse drag events
+  const handleDragStart = (e) => {
+    if (!isSettings) return;
+    setIsDragging(true);
 
-    const handleDragEnd = () => {
-        setIsDragging(false);
-        setDragOverIndex(null);
-    };
+    // ใช้ `_id`
+    e.dataTransfer.setData("text/plain", task._id);
+    e.dataTransfer.effectAllowed = "move";
 
-    const handleTouchStart = (e) => {
-        if (!isSettings) return;
-        const touch = e.touches[0];
-        const rect = e.currentTarget.getBoundingClientRect();
-        setTouchOffset(touch.clientY - rect.top);
-        setIsDragging(true);
-    };
+    const ghost = document.createElement("div");
+    ghost.style.opacity = "0";
+    document.body.appendChild(ghost);
+    e.dataTransfer.setDragImage(ghost, 0, 0);
+    setTimeout(() => document.body.removeChild(ghost), 0);
+  };
 
-    const handleTouchEnd = (e) => {
-        if (!isSettings || !isDragging) return;
-        e.preventDefault();
+  const handleDragOver = (e) => {
+    if (!isSettings) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setDragOverId(task._id);
+  };
 
-        const touch = e.changedTouches[0];
-        const elements = document.elementsFromPoint(
-            touch.clientX,
-            touch.clientY
-        );
-        const taskElement = elements.find(
-            (el) =>
-                el.classList.contains("task-banner") &&
-                el !== dragElementRef.current
-        );
+  const handleDrop = (e) => {
+    if (!isSettings) return;
+    e.preventDefault();
 
-        if (taskElement) {
-            const allTasks = document.querySelectorAll(".task-banner");
-            const droppedIndex = Array.from(allTasks).indexOf(taskElement);
+    const fromId = e.dataTransfer.getData("text/plain");
+    const toId = task._id;
 
-            if (droppedIndex !== -1) {
-                onReorder(index, droppedIndex);
-            }
-        }
+    if (fromId && toId && fromId !== toId) {
+      onReorder(fromId, toId);
+    }
 
-        setIsDragging(false);
-        setDragOverIndex(null);
-        setTouchOffset(0);
-    };
+    setDragOverId(null);
+    setIsDragging(false);
+  };
 
-    const handleTaskClick = () => {
-        if (!isSettings && !isDragging) {
-            onToggle(index);
-        }
-    };
+  const handleDragEnd = () => {
+    setIsDragging(false);
+    setDragOverId(null);
+  };
 
-    const handleCheckboxChange = (e) => {
-        e.stopPropagation();
-        if (!isSettings && !isDragging) {
-            onToggle(index);
-        }
-    };
+  // 👉 Touch drag events
+  const handleTouchStart = () => {
+    if (!isSettings) return;
+    setIsDragging(true);
+  };
 
-    return (
-        <motion.div
-            ref={dragElementRef}
-            key={task._id}
-            layout
-            draggable={isSettings}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
-            onDragOver={handleDragOver}
-            onDragLeave={() => setDragOverIndex(null)}
-            onDrop={handleDrop}
-            onClick={handleTaskClick}
-            initial={{ opacity: 0, y: 0 }}
-            animate={{
-                opacity: isDragging ? 0.7 : 1,
-                y: 0,
-                scale: isDragging ? 1.02 : 1,
-            }}
-            exit={{ opacity: 0, y: 0 }}
-            transition={{ duration: isDragging ? 0 : 0.3 }}
-            className={`task-banner${isChecked ? " task-banner-active" : ""}${
-                dragOverIndex === index ? " drag-over" : ""
-            }${isDragging ? " dragging" : ""} ${
-                isSettings ? "drag-enabled" : ""
-            }`}
-            style={{
-                touchAction: isSettings ? "none" : "auto",
-                userSelect: "none",
-                WebkitUserDrag: isSettings ? "element" : "none",
-                cursor: isSettings ? "grab" : "default",
-            }}
-        >
-            {!isSettings && (
-                <input
-                    className="checkbox-wrapper"
-                    type="checkbox"
-                    checked={isChecked}
-                    disabled={isSettings}
-                    onChange={handleCheckboxChange}
-                />
-            )}
-            <label
-                className="task-label"
-                style={{ 
-                    pointerEvents: isSettings ? "none" : "auto",
-                    cursor: isSettings ? "grab" : "default"
-                }}
-            >
-                {task.title}
-            </label>
+  const handleTouchEnd = (e) => {
+    if (!isSettings || !isDragging) return;
+    e.preventDefault();
 
-            {isSettings && (
-                <div className="edit-buttons">
-                    <button
-                        className="delete-button"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onDelete(task);
-                        }}
-                        onTouchStart={(e) => e.stopPropagation()}
-                        onTouchEnd={(e) => e.stopPropagation()}
-                        aria-label="Delete task"
-                    >
-                        ❌
-                    </button>
-                </div>
-            )}
-        </motion.div>
+    const elements = document.elementsFromPoint(
+      e.changedTouches[0].clientX,
+      e.changedTouches[0].clientY
     );
+
+    const targetElement = elements.find(
+      (el) =>
+        el.classList.contains("task-banner") &&
+        el !== dragElementRef.current
+    );
+
+    if (targetElement) {
+      const fromId = task._id;
+      const toId = targetElement.dataset.id;
+
+      if (fromId && toId && fromId !== toId) {
+        onReorder(fromId, toId);
+      }
+    }
+
+    setIsDragging(false);
+    setDragOverId(null);
+  };
+
+  const handleTaskClick = () => {
+    if (!isSettings && !isDragging) {
+      onToggle(task._id);
+    }
+  };
+
+  const handleCheckboxChange = (e) => {
+    e.stopPropagation();
+    if (!isSettings && !isDragging) {
+      onToggle(task._id);
+    }
+  };
+
+  return (
+    <motion.div
+      ref={dragElementRef}
+      data-id={task._id} // ✅ เก็บ id ไว้ใช้ querySelector
+      key={task._id}
+      layout
+      draggable={isSettings}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onDragOver={handleDragOver}
+      onDragLeave={() => setDragOverId(null)}
+      onDrop={handleDrop}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onClick={handleTaskClick}
+      initial={{ opacity: 0 }}
+      animate={{
+        opacity: isDragging ? 0.7 : 1,
+        scale: isDragging ? 1.02 : 1,
+      }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className={`task-banner${isChecked ? " task-banner-active" : ""}${
+        dragOverId === task._id ? " drag-over" : ""
+      }${isDragging ? " dragging" : ""} ${
+        isSettings ? "drag-enabled" : ""
+      }`}
+      style={{
+        touchAction: isSettings ? "none" : "auto",
+        userSelect: "none",
+        cursor: isSettings ? "grab" : "pointer",
+      }}
+    >
+      {!isSettings && (
+        <input
+          type="checkbox"
+          checked={isChecked}
+          onChange={handleCheckboxChange}
+          className="checkbox-wrapper"
+        />
+      )}
+      <label
+        className="task-label"
+        style={{ pointerEvents: isSettings ? "none" : "auto" }}
+      >
+        {task.title}
+      </label>
+
+      {isSettings && (
+        <div className="edit-buttons">
+          <button
+            className="delete-button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(task);
+            }}
+            aria-label="Delete task"
+          >
+            ❌
+          </button>
+        </div>
+      )}
+    </motion.div>
+  );
 }

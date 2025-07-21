@@ -50,23 +50,22 @@ export function useTasks(editMode = false) {
         setTasks((prevTasks) => sortTasks(prevTasks));
     };
 
-    const toggleTaskCompletion = async (index) => {
+    const toggleTaskCompletion = async (id) => {
         const updatedTasks = [...tasks];
-        const task = updatedTasks[index];
+        const task = updatedTasks.find(task => task._id === id);
         const newValue = !task.todayCompleted;
 
         task.todayCompleted = newValue;
         setTasks(sortTasks(updatedTasks));
 
         try {
-            await fetch(`${API_BASE_URL}/${task._id}`, {
+            await fetch(`${API_BASE_URL}?id=${task._id}&grid=${task.grid}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ todayCompleted: newValue }),
             });
         } catch (err) {
             console.error("Failed to update task:", err);
-            // Revert on error
             task.todayCompleted = !newValue;
             setTasks(sortTasks([...updatedTasks]));
         }
@@ -84,14 +83,27 @@ export function useTasks(editMode = false) {
         }
     };
 
-    const reorderTasks = (fromIndex, toIndex) => {
-        setTasks((prevTasks) => {
-            const newTasks = [...prevTasks];
-            const [draggedTask] = newTasks.splice(fromIndex, 1);
-            newTasks.splice(toIndex, 0, draggedTask);
-            return newTasks;
-        });
-    };
+const reorderTasks = (fromId, toId) => {
+  setTasks((prevTasks) => {
+    const newTasks = [...prevTasks];
+
+    const fromIndex = newTasks.findIndex(t => t._id === fromId);
+    const toIndex = newTasks.findIndex(t => t._id === toId);
+
+    if (fromIndex === -1 || toIndex === -1) return newTasks;
+
+    const fromTask = newTasks[fromIndex];
+    const toTask = newTasks[toIndex];
+
+    if (fromTask.grid !== toTask.grid) return newTasks;
+
+    newTasks.splice(fromIndex, 1);
+    newTasks.splice(toIndex, 0, fromTask);
+
+    return newTasks;
+  });
+};
+
 
     const hasUpdated = () => {
         const boolean = tasks.some((task, index) => task.priority !== index);
@@ -118,35 +130,49 @@ export function useTasks(editMode = false) {
         }
     };
 
-    const saveAllTasks = async (exitEditMode) => {
-        console.log("tasks:", tasks);
-        if (!hasUpdated()) {
-            console.warn("There is no tasks updated.");
-            return;
-        }
-        try {
-            const updatePromises = tasks
-                .map((task, index) => {
-                    if (task.priority !== index) {
-                        return fetch(`${API_BASE_URL}/${task._id}`, {
-                            method: "PUT",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ priority: index }),
-                        });
-                    } else {
-                        return null;
-                    }
-                })
-                .filter(Boolean);
+const saveAllTasks = async (exitEditMode) => {
+  console.log("tasks:", tasks);
 
-            await Promise.all(updatePromises);
-            await fetchTasks();
+  if (!hasUpdated()) {
+    console.warn("There is no tasks updated.");
+    return;
+  }
 
-            if (exitEditMode) exitEditMode();
-        } catch (err) {
-            console.error("💥 เซฟ priority ล้มเหลว:", err);
+  try {
+    // 👉 Group by grid
+    const grids = {};
+    tasks.forEach((task) => {
+      if (!grids[task.grid]) {
+        grids[task.grid] = [];
+      }
+      grids[task.grid].push(task);
+    });
+
+    const updatePromises = [];
+
+    Object.values(grids).forEach((tasksInGrid) => {
+      tasksInGrid.forEach((task, index) => {
+        if (task.priority !== index) {
+          updatePromises.push(
+            fetch(`${API_BASE_URL}?id=${task._id}&grid=${task.grid}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ priority: index }),
+            })
+          );
         }
-    };
+      });
+    });
+
+    await Promise.all(updatePromises);
+    await fetchTasks();
+
+    if (exitEditMode) exitEditMode();
+  } catch (err) {
+    console.error("💥 เซฟ priority ล้มเหลว:", err);
+  }
+};
+
 
     return {
         tasks,
