@@ -22,7 +22,7 @@ It is really an easy project for someone else, but after I finish this, I will m
 
 ---
 
-## How to use
+## How to install
 
 ```bash
 git clone <this project url>
